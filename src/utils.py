@@ -61,3 +61,13 @@ def save_ships(ships, path):
             size = len(coords)
             coords_str = " ".join(f"({x};{y})" for x, y in coords)
             writer.writerow([size, coords_str])
+
+def render_board(occupied):
+    grid = [["." for _ in range(BOARD_SIZE)] for _ in range(BOARD_SIZE)]
+    for x, y in occupied:
+        grid[y][x] = "S"
+    header = "   " + " ".join(str(i) for i in range(BOARD_SIZE))
+    lines = [header]
+    for y in range(BOARD_SIZE):
+        lines.append(f"{y:2} " + " ".join(grid[y]))
+    return "\n".join(lines)
