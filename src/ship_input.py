@@ -1,13 +1,9 @@
 import re
+from utils import BOARD_SIZE, SHIP_SIZES, save_ships, data_path
+from utils import get_ship_coords, is_valid_ship
 
 PATTERN_STRING = r"^(?:1|2|3|4)\s+\d+\s+\d+\s+[nsew]$"
 
-SIZE_4_COUNT = 0
-SIZE_3_COUNT = 0
-SIZE_2_COUNT = 0
-SIZE_1_COUNT = 1
-    
-remaining = {1: SIZE_1_COUNT, 2: SIZE_2_COUNT, 3: SIZE_3_COUNT, 4: SIZE_4_COUNT}
 
 def getinput():
     info = input()
@@ -16,39 +12,47 @@ def getinput():
         info = input()
     return info
 
-def get_ship_coords(size, x, y, direction):
-    x = int(x)
-    y = int(y)
-    dx = 0
-    dy = 0
-    match direction:
-        case 'n':
-            dy = 1
-        case 's':
-            dy = -1
-        case 'e':
-            dx = 1
-        case 'w':
-            dx = -1
-inputs = []
 
-print("Input format: size x y direction \n" \
-		"x,y number from [0;9] \n" \
+def collect_player_ships():
+    remaining = SHIP_SIZES.copy()
+    inputs = []
+    occupied = set()
+
+    print("Input format: size x y direction \n" \
+		f"x,y number from [0;{BOARD_SIZE-1}] \n" \
 		"direction is character from [n,e,s,w]")
-i = 0
 
-while sum(remaining.values()) > 0:
-    raw = getinput()
-    size, x, y, direction = raw.split()
-    size = int(size)
-    if remaining[size] == 0:
-        print(f"All ships of size {size} is placed")
-        continue	
-	# validate borders
-    coords = get_ship_coords(size,x,y,direction)
-    inputs.append(coords)
-    remaining[size] -= 1
-    
-print(inputs)
+    while sum(remaining.values()) > 0:
+        raw = getinput()
+        size, x, y, direction = raw.split()
+        size = int(size)
+        if remaining[size] == 0:
+            print(f"All ships of size {size} is placed")
+            continue
+
+        coords = get_ship_coords(size, x, y, direction)
+        if coords is None:
+            print("Ship goes out of bounds, try again")
+            continue
+
+        if not is_valid_ship(coords, occupied):
+            print("Ship overlaps or touches another ship, try again")
+            continue
+
+        inputs.append(coords)
+        for c in coords:
+            occupied.add(c)
+        remaining[size] -= 1
+
+    return inputs
 
 
+def main():
+    ships = collect_player_ships()
+    save_ships(ships, data_path("player_ships.csv"))
+    print("your ships")
+    print(ships)
+
+
+if __name__ == "__main__":
+    main()
