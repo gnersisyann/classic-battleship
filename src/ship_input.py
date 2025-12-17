@@ -1,6 +1,6 @@
 import re
 from utils import BOARD_SIZE, SHIP_SIZES, save_ships, data_path
-from utils import get_ship_coords, is_valid_ship, render_board
+from utils import get_ship_coords, is_valid_ship, render_occupied
 
 PATTERN_STRING = r"^(?:1|2|3|4)\s+\d+\s+\d+\s+[nsew]$"
 
@@ -43,11 +43,7 @@ def collect_player_ships():
         for c in coords:
             occupied.add(c)
         remaining[size] -= 1
-        inputs.append(coords)
-        for c in coords:
-            occupied.add(c)
-        remaining[size] -= 1
-        print(render_board(occupied))
+        print(render_occupied(occupied))
 
     return inputs
 
