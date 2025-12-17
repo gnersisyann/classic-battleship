@@ -27,8 +27,6 @@ def generate_bot_ships():
 def main():
     ships = generate_bot_ships()
     save_ships(ships, data_path("bot_ships.csv"))
-    print("bot ships")
-    print(ships)
 
 
 if __name__ == "__main__":
